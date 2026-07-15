@@ -7,8 +7,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-</Project>
+  <ItemGroup>
+    <Compile Remove="DotnetDemo.Tests/**/*.cs" />
+  </ItemGroup>
 
-<ItemGroup>
-  <Compile Remove="DotnetDemo.Tests/**/*.cs" />
-</ItemGroup>
+</Project>
