@@ -1,3 +1,15 @@
+name: .NET CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+
 jobs:
   build:
 
@@ -5,25 +17,47 @@ jobs:
 
     steps:
 
+      # Checkout source code
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+
+      # Debug workspace
       - name: Show workspace
         run: |
           pwd
           ls -la
 
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
 
+      # Verify installed .NET
+      - name: Check .NET Version
+        run: |
+          dotnet --version
+          dotnet --info
+
+
+      # Restore NuGet packages
       - name: Restore Packages
-        run: dotnet restore
+        run: |
+          dotnet restore
 
+
+      # Lint / Code formatting check
+      - name: Run Lint
+        run: |
+          dotnet format --verify-no-changes
+        continue-on-error: true
+
+
+      # Build application
       - name: Build Project
-        run: dotnet build --configuration Release --no-restore
+        run: |
+          dotnet build \
+          --configuration Release \
+          --no-restore
 
+
+      # Run Unit Tests
       - name: Run Unit Tests
         run: |
           dotnet test \
@@ -31,19 +65,34 @@ jobs:
           --logger "trx;LogFileName=test-results.trx" \
           --results-directory TestResults
 
+
+      # Display test results in GitHub Actions
+      - name: Publish Test Results
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: Unit Test Results
+          path: '**/*.trx'
+          reporter: dotnet-trx
+
+
+      # Run .NET application
       - name: Run Application
         run: |
-          dotnet run --project dotnet-demo.csproj
+          dotnet run --configuration Release
 
+
+      # Create standalone executable
       - name: Publish Executable
         run: |
           dotnet publish \
-          dotnet-demo.csproj \
           --configuration Release \
-          -r linux-x64 \
+          --runtime linux-x64 \
           --self-contained true \
-          -o publish
+          --output publish
 
+
+      # Upload executable artifact
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
