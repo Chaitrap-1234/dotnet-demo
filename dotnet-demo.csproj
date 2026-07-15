@@ -8,3 +8,7 @@
   </PropertyGroup>
 
 </Project>
+
+<ItemGroup>
+  <Compile Remove="DotnetDemo.Tests/**/*.cs" />
+</ItemGroup>
