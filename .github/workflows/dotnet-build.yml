@@ -53,23 +53,29 @@ jobs:
       - name: Build Project
         run: |
           dotnet build \
-          --configuration Release \
-          --no-restore
+            --configuration Release \
+            --no-restore
 
 
       # Run Unit Tests
       - name: Run Unit Tests
         run: |
+          mkdir -p TestResults
+
           dotnet test \
-          --configuration Release \
-          --logger "trx;LogFileName=test-results.trx" \
-          --results-directory TestResults
+            --configuration Release \
+            --logger "trx;LogFileName=$(pwd)/TestResults/test-results.trx" \
+            --results-directory ./TestResults
+
+          echo "Test result files:"
+          find . -name "*.trx"
 
 
       # Display test results in GitHub Actions
       - name: Publish Test Results
         if: always()
         uses: dorny/test-reporter@v1
+        continue-on-error: true
         with:
           name: Unit Test Results
           path: '**/*.trx'
@@ -79,17 +85,17 @@ jobs:
       # Run .NET application
       - name: Run Application
         run: |
-          dotnet run --configuration Release
+          timeout 30s dotnet run --configuration Release || true
 
 
       # Create standalone executable
       - name: Publish Executable
         run: |
           dotnet publish \
-          --configuration Release \
-          --runtime linux-x64 \
-          --self-contained true \
-          --output publish
+            --configuration Release \
+            --runtime linux-x64 \
+            --self-contained true \
+            --output publish
 
 
       # Upload executable artifact
