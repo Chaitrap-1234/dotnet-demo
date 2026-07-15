@@ -16,12 +16,10 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        
+        uses: actions/checkout@v4
 
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
+      - name: Check .NET
+        run: dotnet --info
 
       - name: Restore Packages
         run: dotnet restore
@@ -30,7 +28,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Publish Executable
-        run: dotnet publish --configuration Release --output publish
+        run: dotnet publish --configuration Release --output publish -r linux-x64 --self-contained true
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
