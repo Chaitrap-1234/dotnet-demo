@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="bef882ae-97b8-4bc6-a04f-b54b70a335a8" name="@ip-172-31-14-146 2026-07-15 07:27:53" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-07-15T07:27:53.2570430+00:00" queuing="2026-07-15T07:27:53.2570431+00:00" start="2026-07-15T07:27:50.8163279+00:00" finish="2026-07-15T07:27:53.2735560+00:00" />
+  <TestSettings name="default" id="50161556-e5b4-464b-afb8-4aa36aabc63f">
+    <Deployment runDeploymentRoot="_ip-172-31-14-146_2026-07-15_07_27_53" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="fc425c21-62f4-4002-9cd9-9c7057b1eb23" testId="4ee0032b-08e8-6e9a-44ba-cdfbef7b0777" testName="DotnetDemo.Tests.CalculatorTests.Add_ShouldReturnSum" computerName="ip-172-31-14-146" duration="00:00:00.0332920" startTime="2026-07-15T07:27:52.8219305+00:00" endTime="2026-07-15T07:27:52.8219635+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fc425c21-62f4-4002-9cd9-9c7057b1eb23" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="DotnetDemo.Tests.CalculatorTests.Add_ShouldReturnSum" storage="/home/githubrunner/actions-runner/_work/dotnet-demo/dotnet-demo/dotnetdemo.tests/bin/release/net8.0/dotnetdemo.tests.dll" id="4ee0032b-08e8-6e9a-44ba-cdfbef7b0777">
+      <Execution id="fc425c21-62f4-4002-9cd9-9c7057b1eb23" />
+      <TestMethod codeBase="/home/githubrunner/actions-runner/_work/dotnet-demo/dotnet-demo/DotnetDemo.Tests/bin/Release/net8.0/DotnetDemo.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="DotnetDemo.Tests.CalculatorTests" name="Add_ShouldReturnSum" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="4ee0032b-08e8-6e9a-44ba-cdfbef7b0777" executionId="fc425c21-62f4-4002-9cd9-9c7057b1eb23" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="1" executed="1" passed="1" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.29)
+[xUnit.net 00:00:00.24]   Discovering: DotnetDemo.Tests
+[xUnit.net 00:00:00.39]   Discovered:  DotnetDemo.Tests
+[xUnit.net 00:00:00.41]   Starting:    DotnetDemo.Tests
+[xUnit.net 00:00:00.66]   Finished:    DotnetDemo.Tests
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>
