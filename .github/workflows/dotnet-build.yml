@@ -1,4 +1,4 @@
-name: .NET Build
+name: .NET CI Pipeline
 
 on:
   push:
@@ -9,29 +9,84 @@ on:
     branches:
       - main
 
+
 jobs:
+
   build:
 
     runs-on: self-hosted
 
+
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
 
-      - name: Check .NET
-        run: dotnet --info
+    # Checkout source
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-      - name: Restore Packages
-        run: dotnet restore
 
-      - name: Build Project
-        run: dotnet build --configuration Release --no-restore
+    # Setup .NET
+    - name: Setup .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
 
-      - name: Publish Executable
-        run: dotnet publish --configuration Release --output publish -r linux-x64 --self-contained true
 
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dotnet-demo
-          path: publish/
+    # Restore
+    - name: Restore Packages
+      run: dotnet restore
+
+
+    # Lint / Code Analysis
+    - name: Run Lint
+      run: |
+        dotnet format --verify-no-changes
+      continue-on-error: true
+
+
+    # Build
+    - name: Build Application
+      run: dotnet build --configuration Release --no-restore
+
+
+    # Unit Test
+    - name: Run Unit Tests
+      run: |
+        dotnet test \
+        --configuration Release \
+        --logger "trx;LogFileName=test-results.trx" \
+        --results-directory TestResults
+
+
+    # Publish Test Results in GitHub UI
+    - name: Publish Test Results
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: Unit Test Results
+        path: TestResults/*.trx
+        reporter: dotnet-trx
+
+
+    # Run Application inside GitHub Action
+    - name: Run Application
+      run: |
+        dotnet run --project DotnetDemo/DotnetDemo.csproj
+
+
+    # Publish Executable
+    - name: Publish Executable
+      run: |
+        dotnet publish \
+        DotnetDemo/DotnetDemo.csproj \
+        -c Release \
+        -r linux-x64 \
+        --self-contained true \
+        -o publish
+
+
+    # Upload executable
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: dotnet-demo-linux
+        path: publish/
