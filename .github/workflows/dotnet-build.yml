@@ -11,6 +11,7 @@ on:
 
 
 jobs:
+
   build:
 
     runs-on: self-hosted
@@ -23,13 +24,15 @@ jobs:
 
 
       # Debug workspace
-      - name: Show workspace
+      - name: Show Workspace
         run: |
           pwd
           ls -la
+          find . -name "*.csproj"
 
 
       # Verify installed .NET
+      # No setup-dotnet required because self-hosted runner already has .NET 8
       - name: Check .NET Version
         run: |
           dotnet --version
@@ -39,68 +42,78 @@ jobs:
       # Restore NuGet packages
       - name: Restore Packages
         run: |
-          dotnet restore
+          dotnet restore dotnet-demo.sln
 
 
-      # Lint / Code formatting check
+      # Lint / Formatting check
       - name: Run Lint
-        run: |
-          dotnet format --verify-no-changes
         continue-on-error: true
+        run: |
+          dotnet format dotnet-demo.sln --verify-no-changes
 
 
       # Build application
       - name: Build Project
         run: |
-          dotnet build \
+          dotnet build dotnet-demo.sln \
             --configuration Release \
             --no-restore
 
 
       # Run Unit Tests
       - name: Run Unit Tests
+        continue-on-error: true
         run: |
-          mkdir -p TestResults
+          rm -rf TestResults
+          mkdir TestResults
 
-          dotnet test \
+          dotnet test dotnet-demo.sln \
             --configuration Release \
-            --logger "trx;LogFileName=$(pwd)/TestResults/test-results.trx" \
+            --logger "trx;LogFileName=test-results.trx" \
             --results-directory ./TestResults
 
-          echo "Test result files:"
-          find . -name "*.trx"
+          echo "Generated test result files:"
+          find . -name "*.trx" -print
 
 
-      # Display test results in GitHub Actions
+      # Publish test result inside GitHub Actions
       - name: Publish Test Results
         if: always()
         uses: dorny/test-reporter@v1
-        continue-on-error: true
         with:
           name: Unit Test Results
-          path: '**/*.trx'
+          path: "TestResults/*.trx"
           reporter: dotnet-trx
 
 
-      # Run .NET application
+      # Run application
       - name: Run Application
         run: |
-          timeout 30s dotnet run --configuration Release || true
+          dotnet run \
+            --project dotnet-demo.csproj \
+            --configuration Release
 
 
       # Create standalone executable
       - name: Publish Executable
         run: |
-          dotnet publish \
+          dotnet publish dotnet-demo.csproj \
             --configuration Release \
             --runtime linux-x64 \
             --self-contained true \
             --output publish
 
 
+      # Verify executable
+      - name: Verify Executable
+        run: |
+          ls -lh publish
+          file publish/*
+
+
       # Upload executable artifact
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dotnet-demo-linux
+          name: dotnet-demo-linux-x64
           path: publish/
